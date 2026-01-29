@@ -51,6 +51,8 @@ class ServinViewerScreen extends StatelessWidget {
               const Divider(),
               _InfoRow(title: 'Apodo o Alias', value: servin.nickname),
               const Divider(),
+              _InfoRow(title: 'Tipo', value: servin.type.name),
+              const Divider(),
               _InfoRow(title: 'Api Key', value: servin.apiKey),
               const Divider(),
               _InfoRow(title: 'Nombre del Propietario', value: servin.ownerName),

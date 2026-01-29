@@ -177,6 +177,26 @@ class _ServinCreationScreenState extends State<ServinCreationScreen> {
                     ),
                     const SizedBox(height: 16),
 
+                    // --- Type ---
+                    AbsorbPointer(
+                      absorbing: updateServin.type != null,
+                      child: DropdownButtonFormField<ServinType>(
+                        initialValue: updateServin.type,
+                        items: ServinType.values
+                            .map(
+                              (e) => DropdownMenuItem<ServinType>(
+                                value: e,
+                                child: Text(e.name),
+                              ),
+                            )
+                            .toList(),
+                        onChanged: (value) {
+                          updateServin.type = value!;
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+
                     // --- URL ---
                     TextFormField(
                       initialValue: updateServin.url,

@@ -1,7 +1,10 @@
+enum ServinType { neptuno, mercury }
+
 class BaseServin {
   final String name;
   final String nickname;
   final String ownerName;
+  final ServinType type;
   final String url;
   final bool isMultiBranch;
   final bool isActive;
@@ -11,6 +14,7 @@ class BaseServin {
     required this.name,
     required this.nickname,
     required this.ownerName,
+    required this.type,
     required this.url,
     this.isMultiBranch = false,
     required this.isActive,
@@ -21,6 +25,7 @@ class BaseServin {
     name: json['name'],
     nickname: json['nickname'],
     ownerName: json['ownerName'],
+    type: ServinType.values.firstWhere((element) => element.name == json['type']),
     url: json['url'],
     isMultiBranch: json['isMultiBranch'] ?? false,
     isActive: json['isActive'],
@@ -31,6 +36,7 @@ class BaseServin {
     'name': name,
     'nickname': nickname,
     'ownerName': ownerName,
+    'type': type.name,
     'url': url,
     'isMultiBranch': isMultiBranch,
     'isActive': isActive,
@@ -43,6 +49,7 @@ class CreateServin extends BaseServin {
     required super.name,
     required super.nickname,
     required super.ownerName,
+    required super.type,
     required super.url,
     super.isMultiBranch,
     required super.isActive,
@@ -53,6 +60,7 @@ class CreateServin extends BaseServin {
     name: json['name'],
     nickname: json['nickname'],
     ownerName: json['ownerName'],
+    type: ServinType.values.firstWhere((element) => element.name == json['type']),
     url: json['url'],
     isMultiBranch: json['isMultiBranch'] ?? false,
     isActive: json['isActive'],
@@ -64,6 +72,7 @@ class UpdateServin {
   String? name;
   String? nickname;
   String? ownerName;
+  ServinType? type;
   String? url;
   bool? isMultiBranch;
   bool? isActive;
@@ -73,6 +82,7 @@ class UpdateServin {
     this.name,
     this.nickname,
     this.ownerName,
+    this.type,
     this.url,
     this.isMultiBranch,
     this.isActive,
@@ -83,6 +93,7 @@ class UpdateServin {
     name: json['name'],
     nickname: json['nickname'],
     ownerName: json['ownerName'],
+    type: ServinType.values.firstWhere((element) => element.name == json['type']),
     url: json['url'],
     isMultiBranch: json['isMultiBranch'] ?? false,
     isActive: json['isActive'] ?? true,
@@ -94,6 +105,7 @@ class UpdateServin {
       'name': name,
       'nickname': nickname,
       'ownerName': ownerName,
+      'type': type?.name,
       'url': url,
       'isMultiBranch': isMultiBranch,
       'isActive': isActive,
@@ -116,6 +128,7 @@ class ServinInDb extends BaseServin {
     required super.name,
     required super.nickname,
     required super.ownerName,
+    required super.type,
     required super.url,
     super.isMultiBranch,
     required super.isActive,
@@ -130,6 +143,7 @@ class ServinInDb extends BaseServin {
     name: json['name'],
     nickname: json['nickname'],
     ownerName: json['ownerName'],
+    type: ServinType.values.firstWhere((element) => element.name == json['type']),
     url: json['url'],
     isMultiBranch: json['isMultiBranch'] ?? false,
     isActive: json['isActive'],
