@@ -151,7 +151,7 @@ class _ServinCreationScreenState extends State<ServinCreationScreen> {
                         return null;
                       },
                       onChanged: (value) {
-                        updateServin.nickname = value;
+                        updateServin.nickname = value.trim();
                       },
                     ),
                     const SizedBox(height: 16),
@@ -172,7 +172,7 @@ class _ServinCreationScreenState extends State<ServinCreationScreen> {
                         return null;
                       },
                       onChanged: (value) {
-                        updateServin.ownerName = value;
+                        updateServin.ownerName = value.trim();
                       },
                     ),
                     const SizedBox(height: 16),
@@ -215,7 +215,7 @@ class _ServinCreationScreenState extends State<ServinCreationScreen> {
                         return null;
                       },
                       onChanged: (value) {
-                        updateServin.url = value;
+                        updateServin.url = value.trim();
                       },
                     ),
                     const SizedBox(height: 16),

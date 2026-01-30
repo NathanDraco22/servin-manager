@@ -1,9 +1,11 @@
 class HttpTools {
-  static const String baseUrl = String.fromEnvironment("SERVER_URL", defaultValue: "http://localhost:8001");
+  static String baseUrl = String.fromEnvironment("SERVER_URL", defaultValue: "http://localhost:8001");
   static const String _api = "/api";
 
   static Uri generateUri(String path, {int version = 1, Map<String, String>? queryParameters}) {
     assert(path.startsWith("/"));
+
+    baseUrl = "http://localhost:8001";
 
     final decodedBase = Uri.parse(baseUrl);
     final fullPath = "$_api/v$version$path";
