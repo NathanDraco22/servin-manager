@@ -12,6 +12,7 @@ class ProviderContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     final servinDatasource = ServinsDataSource();
     final userDatasource = UsersDataSource();
+    final authDatasource = AuthsDataSource();
     return MultiRepositoryProvider(
       providers: [
         RepositoryProvider(
@@ -19,6 +20,9 @@ class ProviderContainer extends StatelessWidget {
         ),
         RepositoryProvider(
           create: (context) => UsersRepository(userDatasource),
+        ),
+        RepositoryProvider(
+          create: (context) => AuthsRepository(authDatasource),
         ),
       ],
       child: child,
