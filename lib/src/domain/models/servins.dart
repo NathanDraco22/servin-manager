@@ -7,6 +7,7 @@ class BaseServin {
   final ServinType type;
   final String url;
   final bool isMultiBranch;
+  final bool isUsingExpirationDate;
   final bool isActive;
   final int price;
 
@@ -17,6 +18,7 @@ class BaseServin {
     required this.type,
     required this.url,
     this.isMultiBranch = false,
+    this.isUsingExpirationDate = true,
     required this.isActive,
     required this.price,
   });
@@ -28,6 +30,7 @@ class BaseServin {
     type: ServinType.values.firstWhere((element) => element.name == json['type']),
     url: json['url'],
     isMultiBranch: json['isMultiBranch'] ?? false,
+    isUsingExpirationDate: json['isUsingExpirationDate'] ?? true,
     isActive: json['isActive'],
     price: json['price'],
   );
@@ -39,6 +42,7 @@ class BaseServin {
     'type': type.name,
     'url': url,
     'isMultiBranch': isMultiBranch,
+    'isUsingExpirationDate': isUsingExpirationDate,
     'isActive': isActive,
     'price': price,
   };
@@ -52,6 +56,7 @@ class CreateServin extends BaseServin {
     required super.type,
     required super.url,
     super.isMultiBranch,
+    super.isUsingExpirationDate,
     required super.isActive,
     required super.price,
   });
@@ -63,6 +68,7 @@ class CreateServin extends BaseServin {
     type: ServinType.values.firstWhere((element) => element.name == json['type']),
     url: json['url'],
     isMultiBranch: json['isMultiBranch'] ?? false,
+    isUsingExpirationDate: json['isUsingExpirationDate'] ?? true,
     isActive: json['isActive'],
     price: json['price'],
   );
@@ -75,6 +81,7 @@ class UpdateServin {
   ServinType? type;
   String? url;
   bool? isMultiBranch;
+  bool? isUsingExpirationDate;
   bool? isActive;
   int? price;
 
@@ -85,6 +92,7 @@ class UpdateServin {
     this.type,
     this.url,
     this.isMultiBranch,
+    this.isUsingExpirationDate,
     this.isActive,
     this.price,
   });
@@ -96,6 +104,7 @@ class UpdateServin {
     type: ServinType.values.firstWhere((element) => element.name == json['type']),
     url: json['url'],
     isMultiBranch: json['isMultiBranch'] ?? false,
+    isUsingExpirationDate: json['isUsingExpirationDate'] ?? true,
     isActive: json['isActive'] ?? true,
     price: json['price'],
   );
@@ -108,6 +117,7 @@ class UpdateServin {
       'type': type?.name,
       'url': url,
       'isMultiBranch': isMultiBranch,
+      'isUsingExpirationDate': isUsingExpirationDate,
       'isActive': isActive,
       'price': price,
     };
@@ -131,6 +141,7 @@ class ServinInDb extends BaseServin {
     required super.type,
     required super.url,
     super.isMultiBranch,
+    super.isUsingExpirationDate,
     required super.isActive,
     required super.price,
     required this.createdAt,
@@ -146,6 +157,7 @@ class ServinInDb extends BaseServin {
     type: ServinType.values.firstWhere((element) => element.name == json['type']),
     url: json['url'],
     isMultiBranch: json['isMultiBranch'] ?? false,
+    isUsingExpirationDate: json['isUsingExpirationDate'] ?? true,
     isActive: json['isActive'],
     price: json['price'],
     createdAt: DateTime.fromMillisecondsSinceEpoch(json['createdAt']),

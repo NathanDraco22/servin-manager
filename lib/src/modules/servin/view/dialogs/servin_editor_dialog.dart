@@ -50,7 +50,8 @@ class _ServinCreationScreenState extends State<ServinCreationScreen> {
     if (widget.servin == null) {
       updateServin = UpdateServin()
         ..isActive = true
-        ..isMultiBranch = false;
+        ..isMultiBranch = false
+        ..isUsingExpirationDate = true;
 
       return;
     }
@@ -72,6 +73,14 @@ class _ServinCreationScreenState extends State<ServinCreationScreen> {
           LoadingDialogManager.closeLoadingDialog(context);
           if (!context.mounted) return;
           DialogManager.showErrorDialog(context, state.error);
+        }
+        if (state is UpdateServinSuccess) {
+          LoadingDialogManager.closeLoadingDialog(context);
+          final readCubit = context.read<ReadServinCubit>();
+          readCubit.markServinUpdated(state.servin);
+          await DialogManager.showInfoDialog(context, 'Actualizado exitosamente');
+          if (!context.mounted) return;
+          Navigator.pop(context);
         }
         if (state is WriteServinSuccess) {
           LoadingDialogManager.closeLoadingDialog(context);
@@ -265,6 +274,16 @@ class _ServinCreationScreenState extends State<ServinCreationScreen> {
                       value: updateServin.isMultiBranch ?? false,
                       onChanged: (bool value) {
                         updateServin.isMultiBranch = value;
+                        setState(() {});
+                      },
+                    ),
+
+                    // --- isUsingExpirationDate ---
+                    SwitchListTile(
+                      title: const Text('¿Usa Fecha de Expiración?'),
+                      value: updateServin.isUsingExpirationDate ?? true,
+                      onChanged: (bool value) {
+                        updateServin.isUsingExpirationDate = value;
                         setState(() {});
                       },
                     ),

@@ -11,6 +11,10 @@ final class WriteServinSuccess extends WriteServinState {
   WriteServinSuccess(this.servin);
 }
 
+final class UpdateServinSuccess extends WriteServinSuccess {
+  UpdateServinSuccess(super.servin);
+}
+
 final class DeleteServinSuccess extends WriteServinState {
   final ServinInDb servin;
   DeleteServinSuccess(this.servin);

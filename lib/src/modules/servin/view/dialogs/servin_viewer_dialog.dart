@@ -64,7 +64,18 @@ class ServinViewerScreen extends StatelessWidget {
               ListTile(
                 contentPadding: EdgeInsets.zero,
                 title: const Text('Multi-Sucursal'),
-                trailing: Text(servin.isMultiBranch ? "Sí" : "No"),
+                trailing: Icon(
+                  servin.isMultiBranch ? Icons.check_circle : Icons.cancel,
+                  color: servin.isMultiBranch ? Colors.green : Colors.red,
+                ),
+              ),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                title: const Text('¿Usa Fecha de Expiración?'),
+                trailing: Icon(
+                  servin.isUsingExpirationDate ? Icons.check_circle : Icons.cancel,
+                  color: servin.isUsingExpirationDate ? Colors.green : Colors.red,
+                ),
               ),
               ListTile(
                 contentPadding: EdgeInsets.zero,

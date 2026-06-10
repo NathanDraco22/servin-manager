@@ -24,7 +24,7 @@ class WriteServinCubit extends Cubit<WriteServinState> {
     emit(WriteServinInProgress());
     try {
       final servin = await servinsRepository.updateServinById(servinId, updateServin);
-      emit(WriteServinSuccess(servin!));
+      emit(UpdateServinSuccess(servin!));
       emit(WriteServinInitial());
     } catch (error) {
       emit(WriteServinError(error.toString()));
