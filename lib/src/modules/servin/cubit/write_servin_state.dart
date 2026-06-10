@@ -4,23 +4,26 @@ sealed class WriteServinState {}
 
 final class WriteServinInitial extends WriteServinState {}
 
-final class WriteServinInProgress extends WriteServinState {}
+final class WritingServin extends WriteServinState {}
 
-final class WriteServinSuccess extends WriteServinState {
-  final ServinInDb servin;
-  WriteServinSuccess(this.servin);
+sealed class WriteServinSuccess extends WriteServinState {
+  final ServinInDb item;
+  WriteServinSuccess(this.item);
 }
 
-final class UpdateServinSuccess extends WriteServinSuccess {
-  UpdateServinSuccess(super.servin);
+final class ServinCreated extends WriteServinSuccess {
+  ServinCreated(super.item);
 }
 
-final class DeleteServinSuccess extends WriteServinState {
-  final ServinInDb servin;
-  DeleteServinSuccess(this.servin);
+final class ServinUpdated extends WriteServinSuccess {
+  ServinUpdated(super.item);
+}
+
+final class ServinDeleted extends WriteServinSuccess {
+  ServinDeleted(super.item);
 }
 
 final class WriteServinError extends WriteServinState {
-  final String error;
-  WriteServinError(this.error);
+  final String message;
+  WriteServinError(this.message);
 }

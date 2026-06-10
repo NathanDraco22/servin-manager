@@ -2,23 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:service_manager_front/src/domain/models/servins.dart';
-import 'package:service_manager_front/src/modules/servin/cubit/read_servin_cubit.dart';
 import 'package:service_manager_front/widgets/dialogs/dialog_manager.dart';
 import 'package:service_manager_front/widgets/dialogs/loading_dialog.dart';
 
 import '../../cubit/write_servin_cubit.dart';
 
 Future<void> showServinEditorServinDialog(BuildContext context, {ServinInDb? servin}) async {
-  final readCubit = context.read<ReadServinCubit>();
   final writeCubit = context.read<WriteServinCubit>();
   await Navigator.push(
     context,
     MaterialPageRoute(
-      builder: (context) => MultiBlocProvider(
-        providers: [
-          BlocProvider.value(value: readCubit),
-          BlocProvider.value(value: writeCubit),
-        ],
+      builder: (context) => BlocProvider.value(
+        value: writeCubit,
         child: ServinCreationScreen(
           servin: servin,
         ),
@@ -65,28 +60,24 @@ class _ServinCreationScreenState extends State<ServinCreationScreen> {
     return BlocListener(
       bloc: write,
       listener: (context, state) async {
-        if (state is WriteServinInProgress) {
+        if (state is WritingServin) {
           LoadingDialogManager.showLoadingDialog(context);
         }
 
         if (state is WriteServinError) {
           LoadingDialogManager.closeLoadingDialog(context);
           if (!context.mounted) return;
-          DialogManager.showErrorDialog(context, state.error);
+          DialogManager.showErrorDialog(context, state.message);
         }
-        if (state is UpdateServinSuccess) {
+        if (state is ServinCreated) {
           LoadingDialogManager.closeLoadingDialog(context);
-          final readCubit = context.read<ReadServinCubit>();
-          readCubit.markServinUpdated(state.servin);
-          await DialogManager.showInfoDialog(context, 'Actualizado exitosamente');
+          await DialogManager.showInfoDialog(context, 'Guardado exitosamente');
           if (!context.mounted) return;
           Navigator.pop(context);
         }
-        if (state is WriteServinSuccess) {
+        if (state is ServinUpdated) {
           LoadingDialogManager.closeLoadingDialog(context);
-          final readCubit = context.read<ReadServinCubit>();
-          readCubit.putServinFirst(state.servin);
-          await DialogManager.showInfoDialog(context, 'Guardado exitosamente');
+          await DialogManager.showInfoDialog(context, 'Actualizado exitosamente');
           if (!context.mounted) return;
           Navigator.pop(context);
         }
@@ -107,9 +98,9 @@ class _ServinCreationScreenState extends State<ServinCreationScreen> {
               if (!context.mounted) return;
               if (widget.servin == null) {
                 final createServin = CreateServin.fromJson(updateServin.toJson());
-                context.read<WriteServinCubit>().createNewServin(createServin);
+                context.read<WriteServinCubit>().create(createServin);
               } else {
-                context.read<WriteServinCubit>().updateServin(widget.servin!.id, updateServin);
+                context.read<WriteServinCubit>().update(widget.servin!.id, updateServin);
               }
             },
             label: const Text('Guardar'),

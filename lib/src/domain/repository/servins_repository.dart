@@ -1,15 +1,18 @@
 import 'package:service_manager_front/src/data/data.dart';
 import 'package:service_manager_front/src/domain/models/servins.dart';
 import 'package:service_manager_front/src/domain/responses/list_responses.dart';
+import 'package:service_manager_front/src/tools/reactive_repo/reactive_repository.dart';
 
-class ServinsRepository {
+class ServinsRepository with ReactiveRepository<ServinInDb> {
   final ServinsDataSource servinsDataSource;
 
   ServinsRepository(this.servinsDataSource);
 
   Future<ServinInDb> createServin(CreateServin createServin) async {
     final result = await servinsDataSource.createServin(createServin.toJson());
-    return ServinInDb.fromJson(result);
+    final servin = ServinInDb.fromJson(result);
+    notifyItemCreated(servin);
+    return servin;
   }
 
   Future<List<ServinInDb>> getAllServins() async {
@@ -39,12 +42,16 @@ class ServinsRepository {
   Future<ServinInDb?> updateServinById(String servinId, UpdateServin servin) async {
     final result = await servinsDataSource.updateServinById(servinId, servin.toJson());
     if (result == null) return null;
-    return ServinInDb.fromJson(result);
+    final updatedServin = ServinInDb.fromJson(result);
+    notifyItemUpdated(updatedServin);
+    return updatedServin;
   }
 
   Future<ServinInDb?> deleteServinById(String servinId) async {
     final result = await servinsDataSource.deleteServinById(servinId);
     if (result == null) return null;
-    return ServinInDb.fromJson(result);
+    final deletedServin = ServinInDb.fromJson(result);
+    notifyItemDeleted(deletedServin);
+    return deletedServin;
   }
 }

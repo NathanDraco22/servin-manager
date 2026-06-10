@@ -9,33 +9,33 @@ class WriteServinCubit extends Cubit<WriteServinState> {
 
   final ServinsRepository servinsRepository;
 
-  Future<void> createNewServin(CreateServin createServin) async {
-    emit(WriteServinInProgress());
+  Future<void> create(CreateServin createServin) async {
+    emit(WritingServin());
     try {
-      final servin = await servinsRepository.createServin(createServin);
-      emit(WriteServinSuccess(servin));
+      final item = await servinsRepository.createServin(createServin);
+      emit(ServinCreated(item));
       emit(WriteServinInitial());
     } catch (error) {
       emit(WriteServinError(error.toString()));
     }
   }
 
-  Future<void> updateServin(String servinId, UpdateServin updateServin) async {
-    emit(WriteServinInProgress());
+  Future<void> update(String servinId, UpdateServin servin) async {
+    emit(WritingServin());
     try {
-      final servin = await servinsRepository.updateServinById(servinId, updateServin);
-      emit(UpdateServinSuccess(servin!));
+      final item = await servinsRepository.updateServinById(servinId, servin);
+      emit(ServinUpdated(item!));
       emit(WriteServinInitial());
     } catch (error) {
       emit(WriteServinError(error.toString()));
     }
   }
 
-  Future<void> deleteServin(String servinId) async {
-    emit(WriteServinInProgress());
+  Future<void> delete(String servinId) async {
+    emit(WritingServin());
     try {
-      final servin = await servinsRepository.deleteServinById(servinId);
-      emit(DeleteServinSuccess(servin!));
+      final item = await servinsRepository.deleteServinById(servinId);
+      emit(ServinDeleted(item!));
       emit(WriteServinInitial());
     } catch (error) {
       emit(WriteServinError(error.toString()));

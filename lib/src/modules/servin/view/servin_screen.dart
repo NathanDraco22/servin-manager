@@ -17,7 +17,7 @@ class ServinScreen extends StatelessWidget {
         BlocProvider(
           create: (context) => ReadServinCubit(
             servinsRepository: servinRepo,
-          )..loadAllServins(),
+          )..getAll(),
         ),
         BlocProvider(
           create: (context) => WriteServinCubit(
@@ -67,13 +67,22 @@ class _Body extends StatelessWidget {
 
         state as ReadServinSuccess;
 
-        final servins = state.servins;
+        final servins = state.items;
         return ListView.separated(
           itemCount: servins.length,
           separatorBuilder: (context, index) => const Divider(),
           itemBuilder: (context, index) {
             final servin = servins[index];
-            final tileColor = index.isEven ? Colors.blueGrey.shade100 : Colors.white;
+            final isNew = state.newItems.contains(servin);
+            final isUpdated = state.updatedItems.contains(servin);
+            Color tileColor;
+            if (isNew) {
+              tileColor = Colors.green.shade50;
+            } else if (isUpdated) {
+              tileColor = Colors.blue.shade50;
+            } else {
+              tileColor = index.isEven ? Colors.blueGrey.shade100 : Colors.white;
+            }
             return ListTile(
               tileColor: tileColor,
               leading: CircleAvatar(
