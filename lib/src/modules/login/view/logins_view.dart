@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:service_manager_front/src/cubits/auth_cubit/auth_cubit.dart';
 import 'package:service_manager_front/src/domain/repository/repository.dart';
-import 'package:service_manager_front/src/modules/servin/view/servin_screen.dart';
+import 'package:service_manager_front/src/modules/home/view/home_screen.dart';
 import 'package:service_manager_front/widgets/dialogs/dialog_manager.dart';
 
 class LoginsScreen extends StatelessWidget {
@@ -64,7 +64,7 @@ class _BodyState extends State<_Body> {
           if (!context.mounted) return;
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => const ServinScreen()),
+            MaterialPageRoute(builder: (context) => const HomeScreen()),
           );
         }
       },

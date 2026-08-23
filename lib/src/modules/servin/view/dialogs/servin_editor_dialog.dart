@@ -257,6 +257,36 @@ class _ServinCreationScreenState extends State<ServinCreationScreen> {
                         updateServin.price = int.parse(value);
                       },
                     ),
+                    const SizedBox(height: 16),
+
+                    // --- Payment Date (Día de pago) ---
+                    TextFormField(
+                      initialValue: updateServin.paymentDate?.toString() ?? '',
+                      textInputAction: TextInputAction.next,
+                      decoration: const InputDecoration(
+                        labelText: 'Día de Pago Mensual (Opcional, 1 - 31)',
+                        prefixIcon: Icon(Icons.calendar_today_outlined),
+                        helperText: 'Ej: 5 para cobros del 5 al 5 de cada mes. Si está vacío, usa el día 1.',
+                        border: OutlineInputBorder(),
+                      ),
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) return null;
+                        final day = int.tryParse(value);
+                        if (day == null || day < 1 || day > 31) {
+                          return 'Debe ser un día válido (1 a 31)';
+                        }
+                        return null;
+                      },
+                      onChanged: (value) {
+                        if (value.trim().isEmpty) {
+                          updateServin.paymentDate = null;
+                          return;
+                        }
+                        updateServin.paymentDate = int.tryParse(value);
+                      },
+                    ),
                     const SizedBox(height: 8),
 
                     // --- isMultiBranch ---

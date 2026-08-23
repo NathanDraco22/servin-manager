@@ -59,7 +59,14 @@ class ServinViewerScreen extends StatelessWidget {
               const Divider(),
               _InfoRow(title: 'URL', value: servin.url, isLink: true),
               const Divider(),
-              _InfoRow(title: 'Precio', value: servin.price.toString()),
+              _InfoRow(title: 'Precio', value: '\$${servin.price}'),
+              const Divider(),
+              _InfoRow(
+                title: 'Día de Pago Mensual',
+                value: servin.paymentDate != null
+                    ? 'Día ${servin.paymentDate} de cada mes'
+                    : 'Predeterminado (Día 1)',
+              ),
               const Divider(),
               ListTile(
                 contentPadding: EdgeInsets.zero,

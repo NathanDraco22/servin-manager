@@ -10,6 +10,7 @@ class BaseServin {
   final bool isUsingExpirationDate;
   final bool isActive;
   final int price;
+  final int? paymentDate;
 
   BaseServin({
     required this.name,
@@ -21,6 +22,7 @@ class BaseServin {
     this.isUsingExpirationDate = true,
     required this.isActive,
     required this.price,
+    this.paymentDate,
   });
 
   factory BaseServin.fromJson(Map<String, dynamic> json) => BaseServin(
@@ -33,6 +35,7 @@ class BaseServin {
     isUsingExpirationDate: json['isUsingExpirationDate'] ?? true,
     isActive: json['isActive'],
     price: json['price'],
+    paymentDate: json['paymentDate'],
   );
 
   Map<String, dynamic> toJson() => {
@@ -45,6 +48,7 @@ class BaseServin {
     'isUsingExpirationDate': isUsingExpirationDate,
     'isActive': isActive,
     'price': price,
+    'paymentDate': paymentDate,
   };
 }
 
@@ -59,6 +63,7 @@ class CreateServin extends BaseServin {
     super.isUsingExpirationDate,
     required super.isActive,
     required super.price,
+    super.paymentDate,
   });
 
   factory CreateServin.fromJson(Map<String, dynamic> json) => CreateServin(
@@ -71,6 +76,7 @@ class CreateServin extends BaseServin {
     isUsingExpirationDate: json['isUsingExpirationDate'] ?? true,
     isActive: json['isActive'],
     price: json['price'],
+    paymentDate: json['paymentDate'],
   );
 }
 
@@ -84,6 +90,7 @@ class UpdateServin {
   bool? isUsingExpirationDate;
   bool? isActive;
   int? price;
+  int? paymentDate;
 
   UpdateServin({
     this.name,
@@ -95,6 +102,7 @@ class UpdateServin {
     this.isUsingExpirationDate,
     this.isActive,
     this.price,
+    this.paymentDate,
   });
 
   factory UpdateServin.fromJson(Map<String, dynamic> json) => UpdateServin(
@@ -107,6 +115,7 @@ class UpdateServin {
     isUsingExpirationDate: json['isUsingExpirationDate'] ?? true,
     isActive: json['isActive'] ?? true,
     price: json['price'],
+    paymentDate: json['paymentDate'],
   );
 
   Map<String, dynamic> toJson() {
@@ -120,6 +129,7 @@ class UpdateServin {
       'isUsingExpirationDate': isUsingExpirationDate,
       'isActive': isActive,
       'price': price,
+      'paymentDate': paymentDate,
     };
     data.removeWhere((key, value) => value == null);
     return data;
@@ -144,6 +154,7 @@ class ServinInDb extends BaseServin {
     super.isUsingExpirationDate,
     required super.isActive,
     required super.price,
+    super.paymentDate,
     required this.createdAt,
     this.updatedAt,
   });
@@ -160,6 +171,7 @@ class ServinInDb extends BaseServin {
     isUsingExpirationDate: json['isUsingExpirationDate'] ?? true,
     isActive: json['isActive'],
     price: json['price'],
+    paymentDate: json['paymentDate'],
     createdAt: DateTime.fromMillisecondsSinceEpoch(json['createdAt']),
     updatedAt: json['updatedAt'] != null ? DateTime.fromMillisecondsSinceEpoch(json['updatedAt']) : null,
   );
