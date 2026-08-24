@@ -1,5 +1,6 @@
-﻿import 'package:service_manager_front/src/data/data.dart';
+import 'package:service_manager_front/src/data/data.dart';
 import 'package:service_manager_front/src/domain/models/receipts.dart';
+import 'package:service_manager_front/src/domain/query_params/receipt_filter_params.dart';
 import 'package:service_manager_front/src/domain/responses/list_responses.dart';
 import 'package:service_manager_front/src/tools/reactive_repo/reactive_repository.dart';
 
@@ -15,8 +16,8 @@ class ReceiptsRepository with ReactiveRepository<ReceiptInDb> {
     return receipt;
   }
 
-  Future<List<ReceiptInDb>> getAllReceipts() async {
-    final results = await receiptsDataSource.getAllReceipts();
+  Future<List<ReceiptInDb>> getAllReceipts({ReceiptFilterParams? filter}) async {
+    final results = await receiptsDataSource.getAllReceipts(filter: filter);
     final response = ListResponse<ReceiptInDb>.fromJson(
       results,
       ReceiptInDb.fromJson,

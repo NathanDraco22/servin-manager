@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:service_manager_front/src/domain/models/receipts.dart';
+import 'package:service_manager_front/src/domain/models/servins.dart';
+import 'package:service_manager_front/src/domain/query_params/receipt_filter_params.dart';
 import 'package:service_manager_front/src/domain/repository/repository.dart';
 import 'package:service_manager_front/src/modules/receipt/cubit/read_receipt_cubit.dart';
 import 'package:service_manager_front/src/modules/receipt/cubit/write_receipt_cubit.dart';
@@ -65,100 +67,236 @@ class _RootScaffold extends StatelessWidget {
   }
 }
 
-class _Body extends StatelessWidget {
+class _Body extends StatefulWidget {
   const _Body();
 
   @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<ReadReceiptCubit, ReadReceiptState>(
-      builder: (context, state) {
-        if (state is ReadReceiptLoading || state is ReadReceiptInitial) {
-          return const Center(child: CircularProgressIndicator());
-        }
+  State<_Body> createState() => _BodyState();
+}
 
-        if (state is ReadReceiptError) {
-          return Center(
-            child: Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(Icons.error_outline, size: 48, color: Colors.red),
-                  const SizedBox(height: 12),
-                  Text(
-                    'Error: ${state.message}',
-                    textAlign: TextAlign.center,
+class _BodyState extends State<_Body> {
+  List<ServinInDb> _servins = [];
+  String? _selectedServinId;
+  bool _isLoadingServins = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadServins();
+  }
+
+  Future<void> _loadServins() async {
+    setState(() => _isLoadingServins = true);
+    try {
+      final servinsRepo = context.read<ServinsRepository>();
+      final servins = await servinsRepo.getAllServins();
+      if (mounted) {
+        setState(() {
+          _servins = servins;
+          _isLoadingServins = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() => _isLoadingServins = false);
+      }
+    }
+  }
+
+  void _onServinFilterChanged(String? servinId) {
+    setState(() => _selectedServinId = servinId);
+    context.read<ReadReceiptCubit>().getAll(
+      filter: ReceiptFilterParams(servinId: servinId),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 680),
+        child: Column(
+          children: [
+            // --- Barra Superior de Filtro por Servin ---
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+              child: Card(
+                elevation: 1,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  side: BorderSide(color: Colors.grey.shade200),
+                ),
+                color: Colors.white,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.filter_list_rounded,
+                        color: Theme.of(context).primaryColor,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<String?>(
+                            value: _selectedServinId,
+                            isExpanded: true,
+                            hint: const Text('Filtrar por Servin'),
+                            icon: _isLoadingServins
+                                ? const SizedBox(
+                                    width: 16,
+                                    height: 16,
+                                    child: CircularProgressIndicator(strokeWidth: 2),
+                                  )
+                                : const Icon(Icons.arrow_drop_down),
+                            items: [
+                              const DropdownMenuItem<String?>(
+                                value: null,
+                                child: Text(
+                                  'Todos los Servins',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                              ..._servins.map(
+                                (s) => DropdownMenuItem<String?>(
+                                  value: s.id,
+                                  child: Text(
+                                    '${s.name} (@${s.nickname})',
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ),
+                            ],
+                            onChanged: _onServinFilterChanged,
+                          ),
+                        ),
+                      ),
+                      if (_selectedServinId != null) ...[
+                        IconButton(
+                          icon: const Icon(Icons.close, size: 18),
+                          tooltip: 'Limpiar filtro',
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                          onPressed: () => _onServinFilterChanged(null),
+                        ),
+                      ],
+                    ],
                   ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () => context.read<ReadReceiptCubit>().getAll(),
-                    child: const Text('Reintentar'),
-                  ),
-                ],
+                ),
               ),
             ),
-          );
-        }
 
-        state as ReadReceiptSuccess;
-        final receipts = state.items;
+            // --- Lista de Recibos ---
+            Expanded(
+              child: BlocBuilder<ReadReceiptCubit, ReadReceiptState>(
+                builder: (context, state) {
+                  if (state is ReadReceiptLoading || state is ReadReceiptInitial) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
 
-        if (receipts.isEmpty) {
-          return Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.receipt_long_outlined,
-                  size: 64,
-                  color: Colors.grey.shade400,
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  'No hay recibos registrados aún',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.grey.shade600,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                TextButton.icon(
-                  onPressed: () => showReceiptEditorDialog(context),
-                  icon: const Icon(Icons.add),
-                  label: const Text('Crear Primer Recibo'),
-                ),
-              ],
-            ),
-          );
-        }
+                  if (state is ReadReceiptError) {
+                    return Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(24.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.error_outline, size: 48, color: Colors.red),
+                            const SizedBox(height: 12),
+                            Text(
+                              'Error: ${state.message}',
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 16),
+                            ElevatedButton(
+                              onPressed: () => context.read<ReadReceiptCubit>().getAll(
+                                filter: ReceiptFilterParams(servinId: _selectedServinId),
+                              ),
+                              child: const Text('Reintentar'),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }
 
-        return RefreshIndicator(
-          onRefresh: () async {
-            await context.read<ReadReceiptCubit>().getAll();
-          },
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 680),
-              child: ListView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                itemCount: receipts.length,
-                itemBuilder: (context, index) {
-                  final receipt = receipts[index];
-                  final isNew = state.newItems.contains(receipt);
-                  final isUpdated = state.updatedItems.contains(receipt);
+                  state as ReadReceiptSuccess;
+                  final receipts = state.items;
 
-                  return _ReceiptCard(
-                    receipt: receipt,
-                    isNew: isNew,
-                    isUpdated: isUpdated,
+                  if (receipts.isEmpty) {
+                    final hasFilter = _selectedServinId != null;
+                    return Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(24.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.receipt_long_outlined,
+                              size: 64,
+                              color: Colors.grey.shade400,
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              hasFilter
+                                  ? 'No hay recibos registrados para este Servin'
+                                  : 'No hay recibos registrados aún',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.grey.shade600,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 12),
+                            if (hasFilter) ...[
+                              OutlinedButton.icon(
+                                onPressed: () => _onServinFilterChanged(null),
+                                icon: const Icon(Icons.clear_all),
+                                label: const Text('Ver Todos los Recibos'),
+                              ),
+                            ] else ...[
+                              TextButton.icon(
+                                onPressed: () => showReceiptEditorDialog(context),
+                                icon: const Icon(Icons.add),
+                                label: const Text('Crear Primer Recibo'),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                    );
+                  }
+
+                  return RefreshIndicator(
+                    onRefresh: () async {
+                      await context.read<ReadReceiptCubit>().getAll(
+                        filter: ReceiptFilterParams(servinId: _selectedServinId),
+                      );
+                    },
+                    child: ListView.builder(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      itemCount: receipts.length,
+                      itemBuilder: (context, index) {
+                        final receipt = receipts[index];
+                        final isNew = state.newItems.contains(receipt);
+                        final isUpdated = state.updatedItems.contains(receipt);
+
+                        return _ReceiptCard(
+                          receipt: receipt,
+                          isNew: isNew,
+                          isUpdated: isUpdated,
+                        );
+                      },
+                    ),
                   );
                 },
               ),
             ),
-          ),
-        );
-      },
+          ],
+        ),
+      ),
     );
   }
 }

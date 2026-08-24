@@ -1,3 +1,4 @@
+import 'package:service_manager_front/src/domain/query_params/receipt_filter_params.dart';
 import 'package:service_manager_front/src/services/http_service.dart';
 import 'package:service_manager_front/src/tools/http_tool.dart';
 
@@ -15,8 +16,11 @@ class ReceiptsDataSource with HttpService {
     return await postQuery(uri, receipt);
   }
 
-  Future<Map<String, dynamic>> getAllReceipts() async {
-    final uri = HttpTools.generateUri(_endpoint);
+  Future<Map<String, dynamic>> getAllReceipts({ReceiptFilterParams? filter}) async {
+    final uri = HttpTools.generateUri(
+      _endpoint,
+      queryParameters: filter?.toMap(),
+    );
     return await getQuery(uri);
   }
 

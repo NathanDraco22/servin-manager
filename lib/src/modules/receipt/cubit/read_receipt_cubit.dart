@@ -1,5 +1,6 @@
-﻿import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:service_manager_front/src/domain/models/receipts.dart';
+import 'package:service_manager_front/src/domain/query_params/receipt_filter_params.dart';
 import 'package:service_manager_front/src/domain/repository/repository.dart';
 import 'package:service_manager_front/src/tools/reactive_repo/reactive_repository.dart';
 
@@ -16,8 +17,12 @@ class ReadReceiptCubit extends Cubit<ReadReceiptState> {
   }
 
   final ReceiptsRepository receiptsRepository;
+  ReceiptFilterParams? currentFilter;
 
-  Future<void> getAll() async {
+  Future<void> getAll({ReceiptFilterParams? filter}) async {
+    if (filter != null || currentFilter == null) {
+      currentFilter = filter;
+    }
     final currentState = state;
     if (currentState is ReadReceiptSuccess) {
       emit(ReadReceiptRefreshing.fromSuccess(currentState));
@@ -25,7 +30,7 @@ class ReadReceiptCubit extends Cubit<ReadReceiptState> {
       emit(ReadReceiptLoading());
     }
     try {
-      final items = await receiptsRepository.getAllReceipts();
+      final items = await receiptsRepository.getAllReceipts(filter: currentFilter);
       if (isClosed) return;
       emit(ReadReceiptSuccess(items));
     } catch (error) {
@@ -51,6 +56,11 @@ class ReadReceiptCubit extends Cubit<ReadReceiptState> {
   }
 
   void markReceiptCreated(ReceiptInDb item) {
+    if (currentFilter?.servinId != null &&
+        currentFilter!.servinId!.isNotEmpty &&
+        item.servinId != currentFilter!.servinId) {
+      return;
+    }
     final currentState = state;
     if (currentState is ReadReceiptSuccess) {
       final items = [item, ...currentState.items.where((u) => u.id != item.id)];
@@ -64,6 +74,13 @@ class ReadReceiptCubit extends Cubit<ReadReceiptState> {
   }
 
   void markReceiptUpdated(ReceiptInDb item) {
+    if (currentFilter?.servinId != null &&
+        currentFilter!.servinId!.isNotEmpty &&
+        item.servinId != currentFilter!.servinId) {
+      // If no longer matches the filter, remove it
+      markReceiptDeleted(item);
+      return;
+    }
     final currentState = state;
     if (currentState is ReadReceiptSuccess) {
       final items = currentState.items.map((u) => u.id == item.id ? item : u).toList();
