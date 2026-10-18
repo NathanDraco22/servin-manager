@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:service_manager_front/src/domain/models/servins.dart';
+import 'package:service_manager_front/src/modules/servin/view/servin_type_visuals.dart';
 import 'package:service_manager_front/widgets/dialogs/dialog_manager.dart';
 import 'package:service_manager_front/widgets/dialogs/loading_dialog.dart';
 
@@ -182,14 +183,35 @@ class _ServinCreationScreenState extends State<ServinCreationScreen> {
                       absorbing: updateServin.type != null,
                       child: DropdownButtonFormField<ServinType>(
                         initialValue: updateServin.type,
+                        decoration: const InputDecoration(
+                          labelText: 'Tipo de Servin',
+                          border: OutlineInputBorder(),
+                        ),
                         items: ServinType.values
                             .map(
                               (e) => DropdownMenuItem<ServinType>(
                                 value: e,
-                                child: Text(e.name),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      Icons.circle,
+                                      size: 10,
+                                      color: e.color,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(e.name),
+                                  ],
+                                ),
                               ),
                             )
                             .toList(),
+                        validator: (value) {
+                          if (value == null) {
+                            return 'Requerido';
+                          }
+                          return null;
+                        },
                         onChanged: (value) {
                           updateServin.type = value!;
                         },

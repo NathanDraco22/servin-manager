@@ -1,4 +1,4 @@
-enum ServinType { neptuno, mercury }
+enum ServinType { neptuno, mercury, serum }
 
 class BaseServin {
   final String name;

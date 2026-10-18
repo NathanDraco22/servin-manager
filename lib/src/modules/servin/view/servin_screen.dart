@@ -6,6 +6,7 @@ import 'package:service_manager_front/src/modules/servin/cubit/read_servin_cubit
 import 'package:service_manager_front/src/modules/servin/cubit/write_servin_cubit.dart';
 import 'package:service_manager_front/src/modules/servin/view/dialogs/servin_editor_dialog.dart';
 import 'package:service_manager_front/src/modules/servin/view/dialogs/servin_viewer_dialog.dart';
+import 'package:service_manager_front/src/modules/servin/view/servin_type_visuals.dart';
 
 class ServinScreen extends StatelessWidget {
   const ServinScreen({super.key});
@@ -183,8 +184,6 @@ class _ServinCard extends StatelessWidget {
       cardBorderColor = Colors.blue.shade400;
     }
 
-    final isNeptuno = servin.type == ServinType.neptuno;
-
     return Card(
       elevation: 2,
       margin: const EdgeInsets.only(bottom: 12),
@@ -212,14 +211,12 @@ class _ServinCard extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: isNeptuno
-                          ? Colors.indigo.shade50
-                          : Colors.deepPurple.shade50,
+                      color: servin.type.backgroundColor,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Icon(
                       Icons.storefront_rounded,
-                      color: isNeptuno ? Colors.indigo : Colors.deepPurple,
+                      color: servin.type.color,
                       size: 24,
                     ),
                   ),
@@ -370,20 +367,27 @@ class _ServinCard extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                     decoration: BoxDecoration(
-                      color: isNeptuno
-                          ? Colors.indigo.shade50
-                          : Colors.purple.shade50,
+                      color: servin.type.backgroundColor,
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: Text(
-                      servin.type.name.toUpperCase(),
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                        color: isNeptuno
-                            ? Colors.indigo.shade800
-                            : Colors.purple.shade800,
-                      ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.circle,
+                          size: 6,
+                          color: servin.type.color,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          servin.type.name.toUpperCase(),
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                            color: servin.type.darkTextColor,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
 

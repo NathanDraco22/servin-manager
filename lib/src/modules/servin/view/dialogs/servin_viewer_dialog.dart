@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:service_manager_front/src/domain/models/servins.dart';
+import 'package:service_manager_front/src/modules/servin/view/servin_type_visuals.dart';
 import 'package:share_plus/share_plus.dart';
 
 // Función para navegar a la pantalla del visor
@@ -51,7 +52,38 @@ class ServinViewerScreen extends StatelessWidget {
               const Divider(),
               _InfoRow(title: 'Apodo o Alias', value: servin.nickname),
               const Divider(),
-              _InfoRow(title: 'Tipo', value: servin.type.name),
+              _InfoRow(
+                title: 'Tipo',
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: servin.type.backgroundColor,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.circle,
+                          size: 8,
+                          color: servin.type.color,
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          servin.type.name.toUpperCase(),
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: servin.type.darkTextColor,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
               const Divider(),
               _InfoRow(title: 'Api Key', value: servin.apiKey),
               const Divider(),
@@ -102,10 +134,16 @@ class ServinViewerScreen extends StatelessWidget {
 
 // Widget auxiliar para mostrar la información de forma consistente
 class _InfoRow extends StatelessWidget {
-  const _InfoRow({required this.title, required this.value, this.isLink = false});
+  const _InfoRow({
+    required this.title,
+    this.value = '',
+    this.isLink = false,
+    this.child,
+  });
   final String title;
   final String value;
   final bool isLink;
+  final Widget? child;
 
   @override
   Widget build(BuildContext context) {
@@ -116,14 +154,17 @@ class _InfoRow extends StatelessWidget {
         children: [
           Text(title, style: Theme.of(context).textTheme.bodySmall),
           const SizedBox(height: 4),
-          SelectableText(
-            value,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              color: isLink ? Colors.blue : null,
-              decoration: isLink ? TextDecoration.underline : null,
-              decorationColor: Colors.blue,
+          if (child != null)
+            child!
+          else
+            SelectableText(
+              value,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                color: isLink ? Colors.blue : null,
+                decoration: isLink ? TextDecoration.underline : null,
+                decorationColor: Colors.blue,
+              ),
             ),
-          ),
         ],
       ),
     );
